@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+<!--&lt;!&ndash;配置UserServiceImpl&ndash;&gt;-->
+<!--    <bean id="userService" class="com.mgh.service.impl.UserServiceImpl" >-->
+<!--        <property name="userDao" ref="userDao"></property>-->
+<!--    </bean>-->
+
+<!--&lt;!&ndash;配置UserDaoImpl&ndash;&gt;-->
+<!--    <bean id="userDao1" class="com.mgh.dao.impl.UserDaoImpl"></bean>-->
+<!--    <bean id="userDao2" class="com.mgh.dao.impl.UserDaoImpl"></bean>-->
+<!--    <bean id="userDao3" class="com.mgh.dao.impl.UserDaoImpl"></bean>-->
+
+<!--&lt;!&ndash;使用静态工厂方法配置UserDaoImpl&ndash;&gt;-->
+<!--&lt;!&ndash;    如果没有配置factory-method，则会将com.mgh.factory.MyBeanFactory1这个类实例化为一个对象，以beanName为userdao1存储在spring容器中&ndash;&gt;-->
+<!--&lt;!&ndash;    配置factory-method之后，则是将这个工厂方法的返回值当作一个实例化对象，存储在容器中&ndash;&gt;-->
+<!--    <bean id="userDao1" class="com.mgh.factory.MyBeanFactory1" factory-method="userDao"></bean>-->
+
+<!--    <bean id="myBeanFactory2" class="com.mgh.factory.MyBeanFactory2" ></bean>-->
+<!--    <bean id="userDao2" factory-bean="myBeanFactory2" factory-method="userDao"></bean>-->
+
+<!--    <bean id="userDao3" class="com.mgh.factory.MyBeanFactory3"></bean>-->
+
+
+<!--<bean id="userService" class="com.mgh.service.impl.UserServiceImpl">-->
+<!--    <property name="stringList" >-->
+<!--        <list>-->
+<!--            <value>aaa</value>-->
+<!--            <value>bbb</value>-->
+<!--            <value>ccc</value>-->
+
+<!--        </list>-->
+<!--    </property>-->
+<!--    <property name="userDaoList" >-->
+<!--        <list>-->
+<!--&lt;!&ndash;          <bean></bean>&ndash;&gt;-->
+<!--&lt;!&ndash;            <bean class="com.mgh.dao.impl.UserDaoImpl"></bean>&ndash;&gt;-->
+<!--&lt;!&ndash;            <bean class="com.mgh.dao.impl.UserDaoImpl"></bean>&ndash;&gt;-->
+<!--&lt;!&ndash;            <bean class="com.mgh.dao.impl.UserDaoImpl"></bean>&ndash;&gt;-->
+<!--&lt;!&ndash;          <ref></ref>&ndash;&gt;-->
+<!--            <ref bean="userDao1"></ref>-->
+<!--            <ref bean="userDao2"></ref>-->
+<!--            <ref bean="userDao3"></ref>-->
+
+<!--        </list>-->
+<!--    </property>-->
+<!--</bean>-->
+
+<!--    <bean id="userService" class="com.mgh.service.impl.UserServiceImpl" autowire="byName"></bean>-->
+<!--    <bean id="userDao" class="com.mgh.dao.impl.UserDaoImpl"></bean>-->
+
+
+
+<!--    配置数据源信息交由Spring管理-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/mybatis"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+
+    </bean>
+
+<!--    配置Connection由Spring管理-->
+    <bean class="java.lang.Class" factory-method="forName">
+        <constructor-arg name="className" value="com.mysql.jdbc.Driver"></constructor-arg>
+    </bean>
+    <bean id="connection" class="java.sql.DriverManager" factory-method="getConnection" scope="prototype">
+        <constructor-arg name="url" value="jdbc:mysql://localhost:3306/mybatis"></constructor-arg>
+        <constructor-arg name="user" value="root"></constructor-arg>
+        <constructor-arg name="password" value="mgh"></constructor-arg>
+    </bean>
+
+
+<!--    配置日期实例-->
+    <bean id="simpleDateFormat" class="java.text.SimpleDateFormat">
+        <constructor-arg name="pattern" value="yyyy-MM-dd HH:mm:ss"></constructor-arg>
+    </bean>
+    <bean id="date" factory-bean="simpleDateFormat" factory-method="parse">
+        <constructor-arg name="source" value="2001-10-13 12:00:00"></constructor-arg>
+    </bean>
+
+
+<!--    //静态工厂方法-->
+<!--    //        InputStream in = Resources.getResourceAsStream("mybatis-config.xml");-->
+<!--    //无参构造实例化-->
+<!--    //        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();-->
+<!--    //实例工厂方法（非静态工厂方法）-->
+<!--    //        SqlSessionFactory build = builder.build(in);-->
+    <bean id="in" class="org.apache.ibatis.io.Resources" factory-method="getResourceAsStream">
+        <constructor-arg name="resource" value="mybatis-config.xml"></constructor-arg>
+    </bean>
+
+    <bean id="builder" class="org.apache.ibatis.session.SqlSessionFactoryBuilder"></bean>
+
+    <bean id="sqlSessionFactory" factory-bean="builder" factory-method="build">
+        <constructor-arg name="inputStream" ref="in"></constructor-arg>
+    </bean>
+</beans>
